@@ -12,10 +12,10 @@ class ScreenLayout extends StatelessWidget {
     required this.title,
     required this.description,
     required this.image,
-    required this.isEnabled,
-    required this.handleEnableChange,
-    required this.enableTitle,
     required this.children,
+    this.isEnabled,
+    this.handleEnableChange,
+    this.enableTitle,
     this.credits,
     this.isInstalled = true,
     this.handleInstallPressed,
@@ -26,11 +26,11 @@ class ScreenLayout extends StatelessWidget {
   final String title;
   final String description;
   final Widget image;
-  final bool isEnabled;
-  final Future<void> Function(bool)? handleEnableChange;
-  final String enableTitle;
   final List<Widget> children;
 
+  final bool? isEnabled;
+  final Future<void> Function(bool)? handleEnableChange;
+  final String? enableTitle;
   final Widget? credits;
   final bool isInstalled;
   final Future<void> Function()? handleInstallPressed;
@@ -70,12 +70,13 @@ class ScreenLayout extends StatelessWidget {
             ),
           ],
         ),
-        enableWidget: !isInstalled
+        enableWidget: !isInstalled || enableTitle == null || isEnabled == null
             ? null
             : _EnableUtility(
-                title: enableTitle,
-                enabled: isEnabled,
-                handleEnableChange: handleEnableChange),
+                title: enableTitle ?? "",
+                enabled: isEnabled ?? false,
+                handleEnableChange: handleEnableChange
+          ),
         children: [
           ...children,
           const SizedBox(height: 16.0),
