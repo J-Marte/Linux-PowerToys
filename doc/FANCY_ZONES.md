@@ -1,6 +1,11 @@
 # Linux PowerToys | Fancy Zones
 FancyZones, enables advanced window layout customization. Effortlessly organize and snap windows into predefined zones to enhance productivity and streamline multitasking on your Linux desktop.
 
+## Select a layout ###
+Click on the panel indicator <img src="https://raw.githubusercontent.com/domferr/modernwindowmanager/main/logo.svg" width="16"/> to show the available layouts. Select the one you prefer by clicking on it. That layout will be applied to every monitor in case you have more than one.
+
+[layout_selection.webm](https://github.com/domferr/modernwindowmanager/assets/14203981/f4956a34-64e3-4c24-b177-8f9b08fcc45c)
+
 ## Layout Builder
 The Layout Builder is a powerful feature of Linux PowerToys that allows you to create, edit, and remove layouts with ease.
 With this tool, you can customize your window arrangements and optimize your productivity. 
@@ -25,3 +30,9 @@ If you no longer need a particular layout, you can easily remove it:
 ![Removing a Layout](./fz3-delete-layout.gif)
 
 Note: you cannot remove the currently selected layout.
+
+### Smart resize
+
+Adjacent tiled windows can be resized together! It can be enabled/disabled from the preferences.
+
+[Resize tiled windows](https://github.com/domferr/modernwindowmanager/assets/14203981/72b16e84-3909-438b-8cad-d8630ad90dc7)
