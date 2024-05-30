@@ -31,6 +31,16 @@ class GnomeColorPickerBackend extends ColorPickerBackend {
   @override
   bool get lastAutomaticallyCopy => _lastAutomaticallyCopy;
 
+  final StreamController<AutomaticallyCopyOption> _automaticallyCopyOptionController =
+  StreamController<AutomaticallyCopyOption>.broadcast();
+  AutomaticallyCopyOption _lastAutomaticallyCopyOption = AutomaticallyCopyOption.hex;
+
+  @override
+  Stream<AutomaticallyCopyOption> get automaticallyCopyOption => _automaticallyCopyOptionController.stream;
+
+  @override
+  AutomaticallyCopyOption get lastAutomaticallyCopyOption => _lastAutomaticallyCopyOption;
+
   late final SharedPreferences prefs;
 
   /// Constructs a new instance of [GnomeColorPickerBackend].
@@ -39,6 +49,7 @@ class GnomeColorPickerBackend extends ColorPickerBackend {
       prefs = value;
       _queryColorsHistory();
       _queryAutomaticallyCopy();
+      _queryAutomaticallyCopyOption();
     });
   }
 
@@ -96,6 +107,16 @@ class GnomeColorPickerBackend extends ColorPickerBackend {
     }
   }
 
+  void _queryAutomaticallyCopyOption() async {
+    try {
+      var label = prefs.getString("color-picker/auto-copy-opt") ?? AutomaticallyCopyOption.hex.label;
+      _lastAutomaticallyCopyOption = AutomaticallyCopyOption.values.firstWhere((element) => element.label.compareTo(label) == 0, orElse: () => AutomaticallyCopyOption.hex);
+      _automaticallyCopyOptionController.add(_lastAutomaticallyCopyOption);
+    } catch (e) {
+      _logger.severe("Failed to get 'auto-copy-opt' setting", e);
+    }
+  }
+
   @override
   setAutomaticallyCopy(bool newValue) {
     prefs.setBool("color-picker/auto-copy", newValue)
@@ -129,8 +150,14 @@ class GnomeColorPickerBackend extends ColorPickerBackend {
       await setColorsHistory(_lastColorsHistory);
       return color;
     }).onError((DBusMethodResponseException error, stackTrace) {
-      _logger.info(error.response.values);
+      _logger.info('pickColor, on error: ${error.response.values}');
       return null;
     });
+  }
+
+  @override
+  void setAutomaticallyCopyOption(AutomaticallyCopyOption option) {
+    prefs.setString("color-picker/auto-copy-opt", option.label)
+        .then((value) => _queryAutomaticallyCopyOption());
   }
 }

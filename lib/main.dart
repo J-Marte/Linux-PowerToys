@@ -24,7 +24,7 @@ void main() {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  setWindowTitle('Linux PowerToys | v0.8 - Preview');
+  setWindowTitle('Linux PowerToys');
   setWindowMinSize(const Size(700, 500));
   setWindowMaxSize(Size.infinite);
 

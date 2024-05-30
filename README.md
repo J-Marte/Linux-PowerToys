@@ -10,19 +10,19 @@
 > [!IMPORTANT]
 > <img src="https://raw.githubusercontent.com/domferr/Linux-PowerToys/main/assets/images/app_icon_256x256.png" align="left" width="64"/> This project is currently in a very early stage of development. 🚧 Get Microsoft's PowerToys utilities and much more to Linux world! This project is not affiliated with or endorsed by Microsoft in any way. It is not a porting effort, but a _complete reimplementation from scratch_. Currently supports GNOME desktop environment only.
 
-Have issues, you want to suggest a new feature or contribute? Please open a new [issue](https://github.com/domferr/modernwindowmanager/issues)!
+Have issues, you want to suggest a new feature or contribute? Please open a new [issue](https://github.com/domferr/Linux-PowerToys/issues)!
 
 ## Utilities
 
 Linux PowerToys brings a set of utilities to tune and streamline Linux experience for greater productivity.
 
-|                       | Utilities                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Awake**             | Keep the computer awake without having to manage its power & sleep settings. This behaviour can be helpful when running time-consuming tasks, ensuring that the computer does not go to sleep or turn off its screens.                                                                                                                                                                                                      |
-| **FancyZones**        | Window management utility that organizes and snaps windows into efficient layouts to enhance workflow speed and quickly restore layouts. FancyZones allows you to define a set of zone positions to use as destinations for windows on the desktop. [Learn more...](./doc/FANCY_ZONES.md) |
-| **Snap Assistant**    | The Snap Assistant tool will appear moving the window on top of the screen. You can choose where to place and how to resize the window. |
-| **Color Picker**      | A system-wide color picking utility for Linux to pick colors from any screen and copy it to the clipboard. |
-| **To be implemented...**            | Rename, Hosts File Editor, Mouse utilities, Quick Accent, Text Extractor, Image Resizer. You want to suggest a new feature or contribute? Please open a new [issue](https://github.com/domferr/modernwindowmanager/issues)!                                                                                                                                                                                                                                                                                                                                                                                                         |
+|   | Utilities | Platform Support |
+|---|---|---|
+| **Awake**             | Keep the computer awake without having to manage its power & sleep settings. This behaviour can be helpful when running time-consuming tasks, ensuring that the computer does not go to sleep or turn off its screens.                                                                                                                                                                                                      | GNOME only |
+| **FancyZones**        | Window management utility that organizes and snaps windows into efficient layouts to enhance workflow speed and quickly restore layouts. FancyZones allows you to define a set of zone positions to use as destinations for windows on the desktop. [Learn more...](./doc/FANCY_ZONES.md) | GNOME only |
+| **Snap Assistant**    | The Snap Assistant tool will appear moving the window on top of the screen. You can choose where to place and how to resize the window. | GNOME only |
+| **Color Picker**      | A system-wide color picking utility for Linux to pick colors from any screen and copy it to the clipboard. | GNOME only |
+| **To be implemented...**            | Rename, Run, Mouse utilities, Quick Accent, Text Extractor, Image Resizer. You want to suggest a new feature or contribute? Please open a new [issue](https://github.com/domferr/Linux-PowerToys/issues)! | |
 
 ## Usage
 Download the [latest](https://github.com/domferr/Linux-PowerToys/releases) release and enjoy! Install the utilities you want, and then you can enable them and change their settings.
@@ -45,7 +45,7 @@ When grabbing and moving a window, the snap assistant will be available on top o
 ### Color Picker ###
 A system-wide color picking utility for Linux to pick colors from any screen and copy it to the clipboard.
 
-![color_picker](https://github.com/domferr/Linux-PowerToys/assets/14203981/79c723ca-f59e-4970-b25f-6d25cc63690e)
+![color_picker](https://github.com/domferr/Linux-PowerToys/assets/14203981/1d425b9b-015c-4387-a6f3-d90231660464)
 
 # Development
 ### Prerequisites

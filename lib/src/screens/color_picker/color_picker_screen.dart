@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:linuxpowertoys/src/common_widgets/credits.dart';
@@ -131,7 +132,7 @@ class _ColorPickerScreenState extends State<ColorPickerScreen> {
   }
 }
 
-class _AutomaticallyCopy extends StatelessWidget {
+class _AutomaticallyCopy extends StatefulWidget {
   const _AutomaticallyCopy({
     required this.enabled,
     required this.backend,
@@ -141,20 +142,27 @@ class _AutomaticallyCopy extends StatelessWidget {
   final ColorPickerBackend backend;
 
   @override
+  State<_AutomaticallyCopy> createState() => _AutomaticallyCopyState();
+}
+
+class _AutomaticallyCopyState extends State<_AutomaticallyCopy> {
+
+
+  @override
   Widget build(BuildContext context) {
     _logger.finest("build() _AutomaticallyCopy");
 
-    var textColor = enabled
+    var textColor = widget.enabled
         ? Theme.of(context).textTheme.bodyMedium?.color
         : Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(90);
 
     return SettingWrapper(
         title: 'Settings',
-        enabled: enabled,
+        enabled: widget.enabled,
         child: Row(
           children: [
             Text(
-              'Copy HEX value to clipboard after picking a color.',
+              'Copy value to clipboard after picking a color.',
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
@@ -162,17 +170,62 @@ class _AutomaticallyCopy extends StatelessWidget {
             ),
             const Expanded(child: SizedBox()),
             StreamListenableBuilder<bool>(
-              initialValue: backend.lastAutomaticallyCopy,
-              stream: backend.automaticallyCopy,
-              builder: (BuildContext context, bool newValue, Widget? child) {
-                return Switch(
-                  value: newValue,
-                  onChanged: enabled ? backend.setAutomaticallyCopy : null,
+              initialValue: widget.backend.lastAutomaticallyCopy,
+              stream: widget.backend.automaticallyCopy,
+              builder: (BuildContext context, bool automaticallyCopyEnabled, Widget? child) {
+                return Row(
+                  children: [
+                    Switch(
+                      value: automaticallyCopyEnabled,
+                      onChanged: widget.enabled ? widget.backend.setAutomaticallyCopy : null,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Container(
+                      width: 96,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).buttonTheme.colorScheme?.secondaryContainer,
+                          borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: StreamListenableBuilder<AutomaticallyCopyOption>(
+                          initialValue: widget.backend.lastAutomaticallyCopyOption,
+                          stream: widget.backend.automaticallyCopyOption,
+                          builder: (BuildContext context, AutomaticallyCopyOption currentOption, Widget? child) {
+                            _logger.info(widget.backend.lastAutomaticallyCopyOption.label);
+                            return DropdownButton<String>(
+                              isExpanded: true,
+                              padding: const EdgeInsets.only(left: 16, right: 8),
+                              borderRadius: BorderRadius.circular(8),
+                              dropdownColor: Theme.of(context).buttonTheme.colorScheme?.secondaryContainer,
+                              focusColor: Theme.of(context).buttonTheme.colorScheme?.secondaryContainer,
+                              value: '${currentOption.index}',
+                              onChanged: automaticallyCopyEnabled ? (
+                                  String? index) {
+                                if (index != null) {
+                                  widget.backend
+                                      .setAutomaticallyCopyOption(
+                                      AutomaticallyCopyOption.values[int.parse(index)]);
+                                }
+                              } : null,
+                              items: AutomaticallyCopyOption.values.map<
+                                  DropdownMenuItem<String>>((AutomaticallyCopyOption opt) {
+                                return DropdownMenuItem<String>(
+                                    value: '${opt.index}',
+                                    child: Text(opt.label)
+                                );
+                              }).toList(),
+                              underline: const SizedBox(),
+                            );
+                          }
+                      ),
+                    )
+                  ],
                 );
-              },
+              }
             ),
+
           ],
-        ));
+        )
+    );
   }
 }
 
@@ -288,7 +341,7 @@ class _ColorsHistoryState extends State<_ColorsHistory> {
   void onDelete(int index) {
     if (index < 0 || index >= widget.backend.lastColorsHistory.length) return;
 
-    widget.backend.lastColorsHistory.removeAt(selectedIndex);
+    widget.backend.lastColorsHistory.removeAt(index);
     setState(() {
       selectedIndex = selectedIndex > 0 ? selectedIndex-1:selectedIndex;
     });
@@ -297,15 +350,29 @@ class _ColorsHistoryState extends State<_ColorsHistory> {
 
   void onPickColor() {
     widget.backend.pickColor().then((color) {
+      if(color == null) return;
       setState(() {
         selectedIndex = widget.backend.lastColorsHistory.length - 1;
       });
-      if (!widget.backend.lastAutomaticallyCopy || color == null) return;
+      if (!widget.backend.lastAutomaticallyCopy) return;
 
-      var hex = '#${(color.value & 0xFFFFFF | 0x1000000).toRadixString(16).substring(1).toUpperCase()}';
-      Clipboard.setData(ClipboardData(text: hex)).then((e) {
+      var value = null;
+      switch(widget.backend.lastAutomaticallyCopyOption) {
+        case AutomaticallyCopyOption.rgb:
+          value = colorToRGBString(color);
+          break;
+        case AutomaticallyCopyOption.hex:
+          value = colorToHEXString(color); '#${(color.value & 0xFFFFFF | 0x1000000).toRadixString(16).substring(1).toUpperCase()}';
+          break;
+        case AutomaticallyCopyOption.hsl:
+          value = colorToHSLString(color);
+          break;
+      }
+      if (value == null) return;
+
+      Clipboard.setData(ClipboardData(text: value)).then((e) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Copied $hex to clipboard'),
+          content: Text('Copied $value to clipboard'),
           duration: Durations.extralong4,
         ));
       });
@@ -327,7 +394,7 @@ class _ColorsHistoryState extends State<_ColorsHistory> {
                 initialValue: widget.backend.lastColorsHistory,
                 stream: widget.backend.colorsHistory,
                 builder: (BuildContext context, List<String> history, Widget? child) {
-                  var selectedColor = selectedIndex < history.length ? Color(int.parse(history[selectedIndex].substring(1, 7), radix: 16) + 0xFF000000):Colors.white;
+                  var selectedColor = history.isEmpty ? Colors.white:Color(int.parse(history[selectedIndex].substring(1, 7), radix: 16) + 0xFF000000);
                   return Column(
                     children: [
                       Row(
@@ -348,22 +415,11 @@ class _ColorsHistoryState extends State<_ColorsHistory> {
                               children: buildCircleButtons(history, onDelete)
                             ),
                           ),
-                          const SizedBox(width: 64),
-                          /*history.isEmpty ? const SizedBox(width: 0):
-                          OutlinedButton.icon(
-                              onPressed: widget.enabled ? onDelete:null,
-                              icon: const Icon(Icons.delete_outline, color: Colors.red),
-                              label: const Text("Delete Selected",
-                                  style: TextStyle(color: Colors.red)
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.black, side: const BorderSide(color: Colors.red)
-                              ),
-                          )*/
+                          const SizedBox(width: 64)
                         ],
                       ),
-                      SizedBox(height: selectedIndex < history.length ? 32:0),
-                      selectedIndex < history.length ? _ColorInfo(color: selectedColor, enabled: widget.enabled):const SizedBox(height: 0),
+                      SizedBox(height: history.isEmpty ? 0:32),
+                      history.isEmpty ? const SizedBox(height: 0):_ColorInfo(color: selectedColor, enabled: widget.enabled),
                     ],
                   );
                 },
@@ -456,6 +512,25 @@ class _CircleButton extends StatelessWidget {
   }
 }
 
+colorToRGBString(Color color) {
+  return 'rgb(${color.red}, ${color.green}, ${color.blue})';
+}
+
+colorToHEXString(Color color) {
+  return '#${(color.value & 0xFFFFFF | 0x1000000).toRadixString(16).substring(1).toUpperCase()}';
+}
+
+colorToHSLString(Color color) {
+  return 'hsl(${HSLColor
+      .fromColor(color)
+      .hue
+      .toStringAsFixed(0)},  ${(HSLColor
+      .fromColor(color)
+      .saturation * 100).toStringAsFixed(0)}%, ${(HSLColor
+      .fromColor(color)
+      .lightness * 100).toStringAsFixed(0)}%)';
+}
+
 class _ColorInfo extends StatelessWidget {
   const _ColorInfo({ super.key, required this.color, required this.enabled });
   final Color color;
@@ -463,16 +538,21 @@ class _ColorInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var hex = '#${(color.value & 0xFFFFFF | 0x1000000).toRadixString(16).substring(1).toUpperCase()}';
-    var rgb = 'RGB(${color.red}, ${color.green}, ${color.blue})';
-    var hsl = 'HSL(${HSLColor.fromColor(color).hue.toStringAsFixed(0)},  ${(HSLColor.fromColor(color).saturation * 100).toStringAsFixed(0)}%, ${(HSLColor.fromColor(color).lightness * 100).toStringAsFixed(0)}%)';
+    var hex = colorToHEXString(color);
+    var rgb = colorToRGBString(color);
+    var hsl = colorToHSLString(color);
 
-    return Row(
+    const spacing = 8.0;
+    return Column(
       children: [
-        _buildColorDetails(context, "Color Name", ColorNames.guess(color)),
+        _buildColorDetails(context, "Name", ColorNames.guess(color)),
+        const SizedBox(height: spacing),
         _buildColorDetails(context, "HEX", hex),
+        const SizedBox(height: spacing),
         _buildColorDetails(context, "RGB", rgb),
+        const SizedBox(height: spacing),
         _buildColorDetails(context, "HSL", hsl),
+        const SizedBox(height: spacing),
       ],
     );
   }
@@ -481,22 +561,27 @@ class _ColorInfo extends StatelessWidget {
     var textColor = enabled
         ? Theme.of(context).textTheme.bodyMedium?.color
         : Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(90);
-    return Expanded(
-      child: Row(
+    return Card(
+      margin: const EdgeInsets.all(0),
+      color: Theme.of(context).colorScheme.onInverseSurface,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+        child: Row(
           children: [
-            const Expanded(child: SizedBox(width: 0)),
-            Column(
-              children: [
-                Text(title, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor)),
-                const SizedBox(height: 6),
-                SelectableText(
-                  colorValue,
-                  style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-                  textAlign: TextAlign.center,
-                )
-              ],
+            SizedBox(width: 96, child: SelectableText(title, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor))),
+            Expanded(
+              child: SelectableText(
+                colorValue,
+                style: TextStyle(fontWeight: FontWeight.bold, color: textColor)
+              ),
             ),
-            const SizedBox(width: 6),
             Ink(
               decoration: const ShapeDecoration(
                 shape: CircleBorder(),
@@ -513,9 +598,75 @@ class _ColorInfo extends StatelessWidget {
                 }: null,
               ),
             ),
-            const Expanded(child: SizedBox(width: 0)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/*class _ColorInfo extends StatelessWidget {
+  const _ColorInfo({ super.key, required this.color, required this.enabled });
+  final Color color;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    var hex = '#${(color.value & 0xFFFFFF | 0x1000000).toRadixString(16).substring(1).toUpperCase()}';
+    var rgb = 'RGB(${color.red}, ${color.green}, ${color.blue})';
+    var hsl = 'HSL(${HSLColor.fromColor(color).hue.toStringAsFixed(0)},  ${(HSLColor.fromColor(color).saturation * 100).toStringAsFixed(0)}%, ${(HSLColor.fromColor(color).lightness * 100).toStringAsFixed(0)}%)';
+
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      runSpacing: 32,
+      spacing: 32,
+      children: [
+        _buildColorDetails(context, "Color Name", ColorNames.guess(color)),
+        _buildColorDetails(context, "HEX", hex),
+        _buildColorDetails(context, "RGB", rgb),
+        _buildColorDetails(context, "HSL", hsl),
+      ],
+    );
+  }
+
+  Widget _buildColorDetails(BuildContext context, String title, String colorValue) {
+    var textColor = enabled
+        ? Theme.of(context).textTheme.bodyMedium?.color
+        : Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(90);
+    return SizedBox(
+      width: 180,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                Text(title, style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor)),
+                const SizedBox(height: 6),
+                SelectableText(
+                  colorValue,
+                  style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                  textAlign: TextAlign.center,
+                )
+              ],
+            ),
+            Ink(
+              decoration: const ShapeDecoration(
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.copy_rounded),
+                onPressed: enabled ? () {
+                  Clipboard.setData(ClipboardData(text: colorValue)).then((e) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Copied $colorValue to clipboard'),
+                      duration: Durations.extralong4,
+                    ));
+                  });
+                }: null,
+              ),
+            ),
           ],
         ),
     );
   }
-}
+}*/

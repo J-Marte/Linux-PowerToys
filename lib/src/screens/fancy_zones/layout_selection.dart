@@ -59,8 +59,8 @@ class LayoutSelection extends StatelessWidget {
   }
 }
 
-const double layoutWidth = 200;
-const double layoutHeight = 200;
+const double layoutWidth = 192;
+const double layoutHeight = 108;
 const double tilesPadding = 3.0;
 
 class _Layout extends StatelessWidget {
@@ -101,7 +101,7 @@ class _Layout extends StatelessWidget {
               padding: const EdgeInsets.all(tilesPadding),
               child: Stack(
                 children: [
-                  ...layout.tiles.map((tile) => _SelectableLayout(tile: tile, padding: tilesPadding)),
+                  ...layout.tiles.map((tile) => _TileWidget(tile: tile, padding: tilesPadding)),
                   Positioned(
                       top: 0,
                       right: 0,
@@ -131,8 +131,8 @@ class _Layout extends StatelessWidget {
   }
 }
 
-class _SelectableLayout extends StatelessWidget {
-  const _SelectableLayout({
+class _TileWidget extends StatelessWidget {
+  const _TileWidget({
     super.key,
     required this.tile,
     this.onTap,
@@ -162,7 +162,7 @@ class _SelectableLayout extends StatelessWidget {
     );
 
     return Container(
-      margin: EdgeInsets.only(left: layoutWidth * tile.x, top: layoutWidth * tile.y),
+      margin: EdgeInsets.only(left: layoutWidth * tile.x, top: layoutHeight * tile.y),
       width: layoutWidth * tile.width,
       height: layoutHeight * tile.height,
       child: Padding(

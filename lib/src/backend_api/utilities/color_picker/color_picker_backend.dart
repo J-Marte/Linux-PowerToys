@@ -22,5 +22,23 @@ abstract class ColorPickerBackend extends UtilityBackend {
   /// Sets the "automatically copy" status to the specified [newValue].
   setAutomaticallyCopy(bool newValue);
 
+  /// Last "automatically copy option" value
+  AutomaticallyCopyOption get lastAutomaticallyCopyOption;
+
+  /// Stream for the "automatically copy option" status.
+  Stream<AutomaticallyCopyOption> get automaticallyCopyOption;
+
+  void setAutomaticallyCopyOption(AutomaticallyCopyOption option);
+
   Future<Color?> pickColor();
+}
+
+enum AutomaticallyCopyOption {
+  hex(label: "HEX"),
+  rgb(label: "RGB"),
+  hsl(label: "HSL");
+
+  const AutomaticallyCopyOption({ required this.label });
+
+  final String label;
 }

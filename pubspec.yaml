@@ -2,7 +2,7 @@ name: linuxpowertoys
 description: Bring Microsoft's PowerToys utilities to Linux world!
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.8.0-preview
+version: 0.8.1
 
 environment:
   sdk: '>=3.0.5 <4.0.0'

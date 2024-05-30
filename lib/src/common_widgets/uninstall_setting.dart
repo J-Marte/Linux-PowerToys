@@ -27,14 +27,13 @@ class UninstallSetting extends StatelessWidget {
                 .bodyMedium
           ),
           const Expanded(child: SizedBox()),
-          ElevatedButton.icon(
+          OutlinedButton.icon(
             onPressed: onUninstall,
-            icon: const Icon(Icons.delete, color: Colors.white),
-            label: const Text("Uninstall",
-                style: TextStyle(color: Colors.white)
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.red),
+            icon: const Icon(Icons.delete),
+            label: const Text("Uninstall"),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(width: 1.0, color: Colors.red),
+              foregroundColor: Colors.red
             ),
           )
         ],
