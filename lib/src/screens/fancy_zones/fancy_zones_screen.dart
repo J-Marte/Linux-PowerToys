@@ -147,7 +147,7 @@ class _FancyZonesScreenState extends State<FancyZonesScreen> {
       handleInstallPressed: handleInstallPressed,
       enableTitle: "Enable Fancy Zones",
       credits: const Credits(
-          name: "ModernWindowManager", url: "https://github.com/domferr/modernwindowmanager"),
+          name: "Tiling Shell", url: "https://github.com/domferr/tilingshell"),
       children: isInstalled
           ? [
               _ActivationShortcut(

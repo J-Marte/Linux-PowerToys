@@ -6,6 +6,7 @@
 ![](https://img.shields.io/github/downloads/domferr/Linux-PowerToys/total)
 ![](https://img.shields.io/badge/Built%20with-Flutter-red)
 ![](https://img.shields.io/github/license/domferr/Linux-PowerToys)
+[![kofi](https://img.shields.io/badge/Donate-on_Ko--fi-purple?logo=ko-fi)](https://ko-fi.com/domferr)
 
 > [!IMPORTANT]
 > <img src="https://raw.githubusercontent.com/domferr/Linux-PowerToys/main/assets/images/app_icon_256x256.png" align="left" width="64"/> This project is currently in a very early stage of development. 🚧 Get Microsoft's PowerToys utilities and much more to Linux world! This project is not affiliated with or endorsed by Microsoft in any way. It is not a porting effort, but a _complete reimplementation from scratch_. Currently supports GNOME desktop environment only.

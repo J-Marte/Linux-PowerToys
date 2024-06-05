@@ -86,8 +86,8 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
   /// Creates a new instance of the GnomeFancyZonesBackend.
   GnomeFancyZonesBackend() {
     var homeDir = Platform.environment["HOME"];
-    _mwmSettings = GSettings('org.gnome.shell.extensions.modernwindowmanager', schemaDirs: [
-      '$homeDir/.local/share/gnome-shell/extensions/modernwindowmanager@ferrarodomenico.com/schemas/'
+    _mwmSettings = GSettings('org.gnome.shell.extensions.tilingshell', schemaDirs: [
+      '$homeDir/.local/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com/schemas/'
     ]);
     // initialize settings
     _queryInnerGapsValue();
@@ -119,7 +119,7 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
     var settings = GSettings('org.gnome.shell');
     var result = await settings
         .get('enabled-extensions')
-        .then((res) => res.asStringArray().contains('modernwindowmanager@ferrarodomenico.com'));
+        .then((res) => res.asStringArray().contains('tilingshell@ferrarodomenico.com'));
     settings.close();
     return result;
   }
@@ -128,7 +128,7 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
   @override
   Future<bool> enable(bool newValue) async {
     return GnomeExtensionUtils.enableDisableExtension(
-            'modernwindowmanager@ferrarodomenico.com', newValue)
+            'tilingshell@ferrarodomenico.com', newValue)
         .then((value) => newValue);
   }
 
@@ -159,17 +159,17 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
     String versionPart = standardOutputLines[0].replaceFirst('GNOME Shell', '').trim();
     bool isHigherThan45 = versionPart.startsWith("45") || versionPart.startsWith("46");
 
-    var url = 'https://github.com/domferr/modernwindowmanager/releases/download/7.0.0/GNOME.40-44.modernwindowmanager@ferrarodomenico.com.zip';
-    if (isHigherThan45) url = 'https://github.com/domferr/modernwindowmanager/releases/download/7.0.0/modernwindowmanager@ferrarodomenico.com.zip';
+    var url = 'https://github.com/domferr/tilingshell/releases/download/7.0.0/GNOME.42-44.tilingshell@ferrarodomenico.com.zip';
+    if (isHigherThan45) url = 'https://github.com/domferr/tilingshell/releases/download/7.0.0/tilingshell@ferrarodomenico.com.zip';
 
-    return _downloadFile(url, '/tmp/modernwindowmanager.zip')
+    return _downloadFile(url, '/tmp/tilingshell.zip')
         .then((bytes) async {
         final archive = ZipDecoder().decodeBytes(bytes);
         var homeDir = Platform.environment["HOME"];
-        extractArchiveToDisk(archive, '$homeDir/.local/share/gnome-shell/extensions/modernwindowmanager@ferrarodomenico.com');
+        extractArchiveToDisk(archive, '$homeDir/.local/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com');
     });
 
-    /*await GnomeExtensionUtils.installRemoteExtension('modernwindowmanager@ferrarodomenico.com')
+    /*await GnomeExtensionUtils.installRemoteExtension('tilingshell@ferrarodomenico.com')
         .then((value) => setEnableSnapAssistant(false));
 
     _queryInnerGapsValue();
@@ -184,7 +184,7 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
   @override
   Future<void> uninstall() async {
     return GnomeExtensionUtils.uninstallExtension(
-        'modernwindowmanager@ferrarodomenico.com')
+        'tilingshell@ferrarodomenico.com')
         .then((value) => true);
   }
 
@@ -222,7 +222,7 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
   /// Handles the keys changed event for the GSettings.
   void _handleKeysChanged(List<String> keys) async {
     for (var changedKey in keys) {
-      _logger.info('ModernWindowManager extension. Changed key: $changedKey');
+      _logger.info('Tiling Shell extension. Changed key: $changedKey');
       switch (changedKey) {
         case 'enable-span-multiple-tiles':
           _querySpanMultipleZonesValue();
@@ -315,13 +315,13 @@ class GnomeFancyZonesBackend extends FancyZonesBackend {
     var client = DBusClient.session();
     var object = DBusRemoteObject(client,
         name: 'org.gnome.Shell',
-        path: DBusObjectPath('/org/gnome/shell/extensions/ModernWindowManager'));
+        path: DBusObjectPath('/org/gnome/shell/extensions/TilingShell'));
     try {
       await object.callMethod(
-          'org.gnome.Shell.Extensions.ModernWindowManager', 'openLayoutEditor', [],
+          'org.gnome.Shell.Extensions.TilingShell', 'openLayoutEditor', [],
       );
     } on DBusServiceUnknownException {
-      _logger.severe('ModernWindowManager service not available');
+      _logger.severe('TilingShell service not available');
     }
     return await client.close();
   }
