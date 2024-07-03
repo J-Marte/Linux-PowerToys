@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../run.dart';
 import '../search/search_pannel.dart';
+import '../summon/dbus_summoning.dart';
 
 import 'plugins/git/git.dart';
 import 'plugins/plugins.dart';
@@ -51,6 +52,8 @@ void main() async {
   RunModel runModel = await RunModel.init();
 
   List<RunPlugin> plugins = await loadPlugins();
+
+  DBusSummon.register(runModel);
 
   runApp(
     MultiProvider(
