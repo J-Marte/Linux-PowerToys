@@ -9,6 +9,7 @@ import '../run.dart';
 import '../search/search_pannel.dart';
 import '../summon/dbus_summoning.dart';
 
+import 'plugins/calculator/calculator.dart';
 import 'plugins/git/git.dart';
 import 'plugins/plugins.dart';
 
@@ -16,6 +17,7 @@ Future<List<RunPlugin>> loadPlugins() async {
   Logger loadLogger = Logger("plugin loader");
 
   List<RunPlugin> plugins = [
+    CalculatorPlugin(),
     GitRunPlugin(),
   ];
 

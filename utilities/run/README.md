@@ -7,3 +7,4 @@ LinuxPowerToys Run is quick launcher inspired by the `Microsoft PowerToys Run ut
 |   Plugin   | Description |
 |------------|-------------|
 | Git        | for searching git repositories in HOME directory |  
+| Calculator | for quickly calculating simple math expressions | 
