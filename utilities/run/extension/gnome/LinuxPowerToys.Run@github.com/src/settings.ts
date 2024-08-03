@@ -1,5 +1,7 @@
 import Gio from 'gi://Gio';
 
+export const LINUX_POWER_TOYS_RUN_APPLICATION_ID = "com.github.LinuxPowerToys.Run";
+
 export const SUMMONING_KEY_NAME = "summon-keybinding"
 
 export function get_summon_key_name(settings: Gio.Settings): string {
