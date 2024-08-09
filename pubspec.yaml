@@ -27,6 +27,7 @@ dependencies:
   colornames: ^0.1.0
   archive: ^3.6.0
   shared_preferences: ^2.2.3
+  expandable: ^5.0.1
 
 dev_dependencies:
   flutter_test:
