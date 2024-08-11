@@ -12,6 +12,7 @@ import '../summon/dbus_summoning.dart';
 import 'plugins/calculator/calculator.dart';
 import 'plugins/git/git.dart';
 import 'plugins/plugins.dart';
+import 'plugins/visual_studio_code/visual_studio_code.dart';
 
 Future<List<RunPlugin>> loadPlugins() async {
   Logger loadLogger = Logger("plugin loader");
@@ -19,6 +20,7 @@ Future<List<RunPlugin>> loadPlugins() async {
   List<RunPlugin> plugins = [
     CalculatorPlugin(),
     GitRunPlugin(),
+    VScodeRunPlugin(),
   ];
 
   for (int i = 0; i < plugins.length; i++) {
